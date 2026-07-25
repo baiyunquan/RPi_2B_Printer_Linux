@@ -34,7 +34,6 @@ grep -q '^DEFAULT_DROPBEAR_ENABLED=true$' config/build.env
 grep -q '^DEFAULT_ROOT_PASSWORD=1234$' config/build.env
 grep -q '^ENABLE_SSH=true$' config/build.env
 grep -q '^OVERLAY=true$' config/build.env
-grep -Eq '^CMDLINE=.*[[:space:]]rw[[:space:]].*$' config/build.env
 grep -q '^SIZE_BOOT=32M$' config/build.env
 grep -q '^SIZE_ROOT_PART=256M$' config/build.env
 grep -q '^SIZE_DATA=64M$' config/build.env
@@ -48,6 +47,7 @@ grep -q 'chroot_exec addgroup root lpadmin' \
 grep -q 'chroot_exec cupsd -t' image/input/stages/60/30-configure-cups.sh
 grep -q 's/defaults,ro/defaults,rw/g' \
 	image/input/stages/10/90-enable-writable-partitions.sh
+grep -q "sed -i .*ro.*rw" image/input/stages/60/90-finalize.sh
 grep -q 'rp=printers/hp1020' image/rootfs/etc/avahi/services/hp1020.service
 test -f .gitmodules
 grep -q 'path = vendor/builder' .gitmodules
