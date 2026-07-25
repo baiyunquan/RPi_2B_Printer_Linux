@@ -33,7 +33,11 @@ grep -q '^ADDITIONAL_KERNEL_MODULES=usblp$' config/build.env
 grep -q '^DEFAULT_DROPBEAR_ENABLED=true$' config/build.env
 grep -q '^DEFAULT_ROOT_PASSWORD=1234$' config/build.env
 grep -q '^ENABLE_SSH=true$' config/build.env
-grep -q '^OVERLAY=$' config/build.env
+grep -q '^OVERLAY=true$' config/build.env
+grep -Eq '^CMDLINE=.*[[:space:]]rw[[:space:]].*$' config/build.env
+grep -q '^SIZE_BOOT=32M$' config/build.env
+grep -q '^SIZE_ROOT_PART=256M$' config/build.env
+grep -q '^SIZE_DATA=64M$' config/build.env
 grep -q 'DROPBEAR_OPTS="-p 22"' image/input/stages/60/60-configure-security.sh
 grep -q 'ATTR{idVendor}=="03f0"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'ATTR{idProduct}=="2b17"' packages/foo2zjs/files/hp1020-udev.rules

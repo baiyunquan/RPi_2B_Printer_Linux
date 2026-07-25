@@ -70,11 +70,11 @@ grep -Eq '^/dev/root[[:space:]]+/[[:space:]]+ext4[[:space:]]+defaults,rw' \
 	"$root/etc/fstab"
 grep -Eq '^LABEL=BOOT[[:space:]]+/(uboot|boot)[[:space:]]+vfat[[:space:]]+defaults,rw' \
 	"$root/etc/fstab"
-if grep -Eq 'defaults,ro|^[[:space:]]*overlay[[:space:]]+/etc[[:space:]]' \
-	"$root/etc/fstab"; then
-	echo "image contains a read-only or overlay filesystem entry" >&2
+if grep -Eq 'defaults,ro' "$root/etc/fstab"; then
+	echo "image contains a read-only filesystem entry" >&2
 	exit 1
 fi
+grep -Eq '^[[:space:]]*overlay[[:space:]]+/etc[[:space:]]' "$root/etc/fstab"
 require_link "$root/etc/runlevels/default/cupsd"
 require_link "$root/etc/runlevels/default/dbus"
 require_link "$root/etc/runlevels/default/dropbear"
@@ -96,6 +96,12 @@ verify_sha256 "$root/usr/share/foo2zjs/firmware/sihp1020.dl" \
 require_file "$root/boot/vmlinuz-rpi"
 require_file "$tmp/boot/u-boot_rpi2.bin"
 require_file "$tmp/boot/boot.scr"
+require_file "$tmp/boot/cmdline.txt"
 grep -q '^kernel=u-boot_rpi2.bin$' "$tmp/boot/config.txt"
+grep -Eq '(^|[[:space:]])rw([[:space:]]|$)' "$tmp/boot/cmdline.txt"
+if grep -Eq '(^|[[:space:]])ro([[:space:]]|$)' "$tmp/boot/cmdline.txt"; then
+	echo "kernel command line requests a read-only root filesystem" >&2
+	exit 1
+fi
 
 printf '%s\n' "image inspection passed: $archive"

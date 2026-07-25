@@ -4,7 +4,8 @@
 
 主要特性：
 
-- `raspi-alpine/builder` 的可写 A/B rootfs、可写 Boot 和持久 data 分区。
+- `raspi-alpine/builder` 的可写 A/B rootfs、可写 Boot，以及承载 `/etc`
+  overlay 的持久 Data 分区。
 - 每次 HP 1020 通电或 USB 重连时自动加载 `sihp1020.dl`。
 - 自动创建名为 `hp1020` 的 CUPS 队列，并通过局域网提供 IPP。
 - 默认启用 Avahi，地址为 `hp1020.local`；可在构建时关闭。

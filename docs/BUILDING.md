@@ -37,9 +37,15 @@ sudo scripts/inspect-image.sh
 
 `build-foo2zjs-apk.sh` 在 arm/v7 Alpine 容器内运行 `abuild`，输出三个已签名包和 APKINDEX。`build-image.sh` 直接从锁定的 `vendor/builder` submodule 构建 builder 容器，不使用浮动的 `latest` 镜像。固件转换工具来自锁定的 `vendor/foo2zjs` submodule。
 
-生成的 Boot、活动 rootfs 和备用 rootfs 分区均按可写方式挂载，`/etc`
-直接位于 rootfs，不再使用 data 分区上的 overlay。A/B 分区结构仍然保留。
-CUPS 配置在镜像组装阶段通过 `cupsd -t` 校验。
+生成的 Boot、活动 rootfs 和备用 rootfs 分区均按可写方式挂载。`/etc`
+继续使用 data 分区上的持久化 overlay；这不会把 rootfs 设为只读，并可让配置在
+A/B rootfs 切换后继续生效。A/B 分区结构仍然保留。CUPS 配置在镜像组装阶段通过
+`cupsd -t` 校验。
+
+默认分区为 Boot 32 MiB、Root A 256 MiB、Root B 256 MiB、Data 64 MiB，
+生成的原始 IMG 约 610 MiB。Root 文件系统在打包时还会缩小到实际所需容量；
+首次启动时，末尾的 Data 分区会扩展到 SD 卡剩余空间。若加入更多软件包，应同步
+增大 `SIZE_ROOT_PART`，避免镜像创建阶段空间不足。
 
 ## 构建参数
 
