@@ -90,6 +90,12 @@ case "$root_password" in
 		;;
 esac
 find "$root/lib/modules" -type f -name 'usblp.ko*' | grep -q .
+find "$root/lib/modules" -type f -name 'rtw88_8822cu.ko*' | grep -q .
+find "$root/lib/modules" -type f -name 'rtw88_8821cu.ko*' | grep -q .
+find "$root/lib/firmware/rtw88" -maxdepth 1 -type f \
+	-name 'rtw8822c_fw.bin*' | grep -q .
+find "$root/lib/firmware/rtw88" -maxdepth 1 -type f \
+	-name 'rtw8821c_fw.bin*' | grep -q .
 file "$root/usr/bin/foo2zjs" | grep -Eq 'ARM|EABI'
 verify_sha256 "$root/usr/share/foo2zjs/firmware/sihp1020.dl" \
 	"$HP1020_FIRMWARE_DL_SHA256"

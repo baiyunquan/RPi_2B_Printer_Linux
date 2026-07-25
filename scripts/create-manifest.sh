@@ -37,6 +37,11 @@ cat >"$output/build-manifest.json" <<EOF
     "commit": "$RPI_FIRMWARE_COMMIT",
     "package": "$RPI_FIRMWARE_PACKAGE"
   },
+  "wifi": {
+    "chipsets": ["RTL8822CU", "RTL8811CU"],
+    "drivers": ["rtw88_8822cu", "rtw88_8821cu"],
+    "firmware_package": "linux-firmware-rtw88=$LINUX_FIRMWARE_RTW88_VERSION"
+  },
   "hp1020_firmware_sha256": "$HP1020_FIRMWARE_DL_SHA256"
 }
 EOF

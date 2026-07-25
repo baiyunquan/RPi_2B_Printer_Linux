@@ -29,7 +29,12 @@ done
 
 grep -q '^ARCH=armv7$' config/build.env
 grep -q '^DEV=eudev$' config/build.env
-grep -q '^ADDITIONAL_KERNEL_MODULES=usblp$' config/build.env
+grep -q \
+	'^ADDITIONAL_KERNEL_MODULES=usblp rtw88_8822cu rtw88_8821cu$' \
+	config/build.env
+grep -q '^LINUX_FIRMWARE_RTW88_VERSION=20251125-r1$' config/sources.lock
+grep -q "linux-firmware-rtw88=\$LINUX_FIRMWARE_RTW88_VERSION" \
+	image/input/stages/00/50-arch-specific-rpi.sh
 grep -q '^DEFAULT_DROPBEAR_ENABLED=true$' config/build.env
 grep -q '^DEFAULT_ROOT_PASSWORD=1234$' config/build.env
 grep -q '^ENABLE_SSH=true$' config/build.env

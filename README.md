@@ -8,6 +8,7 @@
   overlay 的持久 Data 分区。
 - 每次 HP 1020 通电或 USB 重连时自动加载 `sihp1020.dl`。
 - 自动创建名为 `hp1020` 的 CUPS 队列，并通过局域网提供 IPP。
+- 内置 RTL8822CU、RTL8811CU USB 无线网卡驱动及配套固件。
 - 默认启用 Avahi，地址为 `hp1020.local`；可在构建时关闭。
 - 默认启用 Dropbear SSH，允许使用 root 和密码 `1234` 登录。
 - GitHub Actions 构建已签名的 armv7 APK、本地镜像、校验文件和版本清单。
@@ -46,6 +47,13 @@ ssh root@hp1020.local
 ```
 
 默认密码为 `1234`。这是便于首次部署的弱密码，只应在受信任的隔离内网使用；投入长期运行前应立即执行 `passwd` 修改密码，或在构建时关闭 SSH。
+
+## RTL8822CU、RTL8811CU 无线网卡
+
+镜像使用 Linux 6.12 内核自带的 `rtw88_8822cu` 和 `rtw88_8821cu`
+驱动；RTL8811CU 由后者支持，不安装第三方 DKMS 模块。构建过程会保留
+这些模块及其依赖，并安装锁定版本的 `linux-firmware-rtw88`。插入网卡后
+可用 `ip link` 查看无线接口。
 
 ## CUPS 管理
 

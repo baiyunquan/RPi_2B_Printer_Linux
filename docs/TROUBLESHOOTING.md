@@ -28,6 +28,25 @@ udevadm test /sys/class/usb/lp0
 
 固件 SHA-256 应与 `config/sources.lock` 中的 `HP1020_FIRMWARE_DL_SHA256` 一致。
 
+## RTL8822CU 或 RTL8811CU 网卡没有出现
+
+先确认 USB 设备、驱动和固件：
+
+```sh
+lsusb
+modprobe rtw88_8822cu
+modprobe rtw88_8821cu
+lsmod | grep rtw88
+find /lib/firmware/rtw88 \
+  \( -name 'rtw8822c_fw.bin*' -o -name 'rtw8821c_fw.bin*' \)
+dmesg | grep -E 'rtw88|8821|8822|firmware'
+ip link
+```
+
+如果 `modprobe` 报模块不存在，应检查镜像中的 `linux-rpi` 版本以及构建时
+`ADDITIONAL_KERNEL_MODULES` 是否仍包含对应的 `rtw88_8822cu` 或
+`rtw88_8821cu`。
+
 ## 作业卡住
 
 ```sh

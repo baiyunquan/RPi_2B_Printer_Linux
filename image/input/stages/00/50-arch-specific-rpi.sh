@@ -10,8 +10,14 @@
 	echo "RPI_BOOTLOADER_VERSION is required" >&2
 	exit 1
 }
+[ -n "${LINUX_FIRMWARE_RTW88_VERSION:-}" ] || {
+	echo "LINUX_FIRMWARE_RTW88_VERSION is required" >&2
+	exit 1
+}
 
-chroot_exec apk add "linux-rpi=$LINUX_RPI_VERSION"
+chroot_exec apk add \
+	"linux-rpi=$LINUX_RPI_VERSION" \
+	"linux-firmware-rtw88=$LINUX_FIRMWARE_RTW88_VERSION"
 
 case "$RPI_FIRMWARE_BRANCH" in
 	alpine)

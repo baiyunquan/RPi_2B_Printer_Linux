@@ -17,6 +17,10 @@ rc-service dbus status
 rc-service avahi-daemon status
 lpstat -t
 lsmod | grep usblp
+modprobe rtw88_8822cu
+modprobe rtw88_8821cu
+ip link
+dmesg | grep -E 'rtw88|8821|8822'
 dmesg | grep hp1020
 ```
 
