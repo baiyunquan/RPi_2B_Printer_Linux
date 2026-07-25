@@ -2,6 +2,8 @@
 
 chown root:lp "$ROOTFS_PATH/etc/cups/cupsd.conf"
 chmod 640 "$ROOTFS_PATH/etc/cups/cupsd.conf"
+chroot_exec addgroup root lpadmin
+chroot_exec cupsd -t
 
 ppd="$ROOTFS_PATH/usr/share/cups/model/HP-LaserJet_1020.ppd.gz"
 [ -s "$ppd" ] || {

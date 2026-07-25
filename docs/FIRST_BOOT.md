@@ -5,7 +5,8 @@
 3. 执行 `ssh root@hp1020.local`，使用默认密码 `1234` 登录，并立即运行 `passwd` 修改密码。
 4. 给 HP LaserJet 1020 通电。
 5. 查看 `dmesg`，应出现 `hp1020` 固件上传记录和 USB 重枚举。
-6. 打开 `http://hp1020.local:631/printers/hp1020`。
+6. 打开 `http://hp1020.local:631/printers/hp1020`；管理页面为
+   `http://hp1020.local:631/admin`，使用 root 系统账户认证。
 7. 打印 CUPS 测试页。
 
 设备上可执行：

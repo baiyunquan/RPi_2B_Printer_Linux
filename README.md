@@ -4,7 +4,7 @@
 
 主要特性：
 
-- `raspi-alpine/builder` 的只读 A/B rootfs 和持久 data 分区。
+- `raspi-alpine/builder` 的可写 A/B rootfs、可写 Boot 和持久 data 分区。
 - 每次 HP 1020 通电或 USB 重连时自动加载 `sihp1020.dl`。
 - 自动创建名为 `hp1020` 的 CUPS 队列，并通过局域网提供 IPP。
 - 默认启用 Avahi，地址为 `hp1020.local`；可在构建时关闭。
@@ -45,6 +45,12 @@ ssh root@hp1020.local
 ```
 
 默认密码为 `1234`。这是便于首次部署的弱密码，只应在受信任的隔离内网使用；投入长期运行前应立即执行 `passwd` 修改密码，或在构建时关闭 SSH。
+
+## CUPS 管理
+
+同一局域网内可打开 `http://hp1020.local:631/`。打印队列页面和
+`/admin` 管理页面均允许局域网访问，管理操作使用系统账户
+`root` 登录。镜像构建时会执行 `cupsd -t`，配置语法错误会直接终止构建。
 
 ## 版本锁定
 

@@ -10,6 +10,7 @@ config/sources.lock
 packages/foo2zjs/APKBUILD
 packages/foo2zjs/files/hp1020-firmware-loader
 image/input/image.sh
+image/input/stages/10/90-enable-writable-partitions.sh
 image/input/stages/60/20-install-print-stack.sh
 image/rootfs/etc/cups/cupsd.conf
 image/rootfs/etc/avahi/services/hp1020.service
@@ -32,10 +33,17 @@ grep -q '^ADDITIONAL_KERNEL_MODULES=usblp$' config/build.env
 grep -q '^DEFAULT_DROPBEAR_ENABLED=true$' config/build.env
 grep -q '^DEFAULT_ROOT_PASSWORD=1234$' config/build.env
 grep -q '^ENABLE_SSH=true$' config/build.env
+grep -q '^OVERLAY=$' config/build.env
 grep -q 'DROPBEAR_OPTS="-p 22"' image/input/stages/60/60-configure-security.sh
 grep -q 'ATTR{idVendor}=="03f0"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'ATTR{idProduct}=="2b17"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'Port 631' image/rootfs/etc/cups/cupsd.conf
+test "$(grep -c 'Allow @LOCAL' image/rootfs/etc/cups/cupsd.conf)" -eq 3
+grep -q 'chroot_exec addgroup root lpadmin' \
+	image/input/stages/60/30-configure-cups.sh
+grep -q 'chroot_exec cupsd -t' image/input/stages/60/30-configure-cups.sh
+grep -q 's/defaults,ro/defaults,rw/g' \
+	image/input/stages/10/90-enable-writable-partitions.sh
 grep -q 'rp=printers/hp1020' image/rootfs/etc/avahi/services/hp1020.service
 test -f .gitmodules
 grep -q 'path = vendor/builder' .gitmodules

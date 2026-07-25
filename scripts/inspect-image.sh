@@ -64,7 +64,17 @@ require_file "$root/usr/share/foo2zjs/firmware/sihp1020.dl"
 require_file "$root/etc/udev/rules.d/70-hp1020.rules"
 require_file "$root/etc/init.d/hp1020"
 require_file "$root/etc/modules-load.d/hp1020.conf"
+require_file "$root/etc/fstab"
 grep -q usblp "$root/etc/modules-load.d/hp1020.conf"
+grep -Eq '^/dev/root[[:space:]]+/[[:space:]]+ext4[[:space:]]+defaults,rw' \
+	"$root/etc/fstab"
+grep -Eq '^LABEL=BOOT[[:space:]]+/(uboot|boot)[[:space:]]+vfat[[:space:]]+defaults,rw' \
+	"$root/etc/fstab"
+if grep -Eq 'defaults,ro|^[[:space:]]*overlay[[:space:]]+/etc[[:space:]]' \
+	"$root/etc/fstab"; then
+	echo "image contains a read-only or overlay filesystem entry" >&2
+	exit 1
+fi
 require_link "$root/etc/runlevels/default/cupsd"
 require_link "$root/etc/runlevels/default/dbus"
 require_link "$root/etc/runlevels/default/dropbear"

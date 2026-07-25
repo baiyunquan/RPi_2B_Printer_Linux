@@ -37,6 +37,10 @@ sudo scripts/inspect-image.sh
 
 `build-foo2zjs-apk.sh` 在 arm/v7 Alpine 容器内运行 `abuild`，输出三个已签名包和 APKINDEX。`build-image.sh` 直接从锁定的 `vendor/builder` submodule 构建 builder 容器，不使用浮动的 `latest` 镜像。固件转换工具来自锁定的 `vendor/foo2zjs` submodule。
 
+生成的 Boot、活动 rootfs 和备用 rootfs 分区均按可写方式挂载，`/etc`
+直接位于 rootfs，不再使用 data 分区上的 overlay。A/B 分区结构仍然保留。
+CUPS 配置在镜像组装阶段通过 `cupsd -t` 校验。
+
 ## 构建参数
 
 默认值位于 `config/build.env`。常用覆盖：
