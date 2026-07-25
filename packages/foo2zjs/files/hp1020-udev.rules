@@ -1,2 +1,2 @@
 # HP LaserJet 1020, firmware-less USB state.
-ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="03f0", ATTR{idProduct}=="2b17", RUN+="/usr/local/libexec/hp1020-firmware-loader"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="03f0", ATTR{idProduct}=="2b17", RUN+="/usr/libexec/hp1020-firmware-loader"

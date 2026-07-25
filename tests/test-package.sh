@@ -15,7 +15,7 @@ docker run --rm --privileged --platform linux/arm/v7 \
 		test -x /usr/bin/foo2zjs-wrapper
 		test -x /usr/bin/foo2zjs-pstops
 		test -s /usr/share/cups/model/HP-LaserJet_1020.ppd.gz
-		test -x /usr/local/libexec/hp1020-firmware-loader
+		test -x /usr/libexec/hp1020-firmware-loader
 		test -s /etc/udev/rules.d/70-hp1020.rules
 		file /usr/bin/foo2zjs | grep -Eq "ARM|EABI"
 	'

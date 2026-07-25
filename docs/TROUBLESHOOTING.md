@@ -9,7 +9,7 @@
 打印机必须在线，首次启动服务才能获得 USB URI。运行：
 
 ```sh
-/usr/local/libexec/hp1020-firmware-loader
+/usr/libexec/hp1020-firmware-loader
 lpstat -t
 ```
 

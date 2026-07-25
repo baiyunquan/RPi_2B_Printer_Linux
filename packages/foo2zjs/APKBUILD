@@ -50,9 +50,9 @@ hp1020() {
 	depends="$pkgname-cups=$pkgver-r$pkgrel cups usbutils"
 
 	install -Dm755 "$srcdir/hp1020-firmware-loader" \
-		"$subpkgdir/usr/local/libexec/hp1020-firmware-loader"
+		"$subpkgdir/usr/libexec/hp1020-firmware-loader"
 	install -Dm755 "$srcdir/hp1020-firstboot" \
-		"$subpkgdir/usr/local/libexec/hp1020-firstboot"
+		"$subpkgdir/usr/libexec/hp1020-firstboot"
 	install -Dm755 "$srcdir/hp1020-openrc" \
 		"$subpkgdir/etc/init.d/hp1020"
 	install -Dm644 "$srcdir/hp1020-udev.rules" \
@@ -63,7 +63,7 @@ hp1020() {
 sha512sums="
 f040813b35f7c900fce9ad6565a1c6d54e42bde8405cdaf933a7c460b207490b4fb78a98ab1aaed2cbd43cd1c5fe09c3831b26d7da30c2e1c1e78b1a1886dc07  foo2zjs-f8500e3b1de02b5d88330ebd4d2ea079e2bebbfd.tar.gz
 a83829cb26ed12aa9ac8ad5301fc0c647bab772360416d8e435ad41256e815419e9c6414530e7a38cc2cb69691ae4bff9d8755db0331cee948af4c6019fb4ec2  hp1020-firmware-loader
-62a46549bd59c906b9440896955c6cb5a838da32498ccdba3cb4f8a3ee49286b3af42571f2e09c81779e7283eb68db86818fb43f20e492a903b0d84d78899c4a  hp1020-firstboot
-cd2ad186e180781058f0aa116e80d14281f380cbd3fecf9ffb4d0293ada5b0a118dd67d05993631367d519b7038f2ea0751ef366d7a6ec6dc5f11391dfc1473b  hp1020-openrc
-413023f17c5e7d81828ed0bc99cde9e7931b17decc23431caeb91280394cbe546b64aa7d4fd06a0be10d77844d1f67f61b60c06774deb961b3e708c05ac5ce16  hp1020-udev.rules
+8da83dd47d73a57edd081f9564db98e97b6ee2786c53a25d8d580ac60bedfbde15c57375b952745dcc6f1432dbf04c70cfc70093f13d7ae4e8e0f30e58022560  hp1020-firstboot
+2b0c0b56a1bb15dc8e5c176fdd8b8629c2dd1cc66a0d4b0f1b1c94713e3e7d6b8900f9f942cb4263bd8b5ceac97dea9b4c54feedd428e3a7ed3578383b69f15e  hp1020-openrc
+47d2d24a7edb265a34179f488e3db8f34d08177c14f01eb9129ac54569934d8f9eecf1fecb14dbdfb4a08470084dfd16f2a3fb4381ed97ed6d6c3e72784ae214  hp1020-udev.rules
 "
