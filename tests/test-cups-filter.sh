@@ -11,10 +11,10 @@ docker run --rm --privileged --platform linux/arm/v7 \
 	"alpine:3.23" /bin/sh -euxc '
 		cp /repo/*.rsa.pub /etc/apk/keys/
 		apk add --no-cache --repository /repo \
-			foo2zjs foo2zjs-cups cups-filters ghostscript
+			foo2zjs foo2zjs-cups cups cups-filters ghostscript
 		gzip -dc /usr/share/cups/model/HP-LaserJet_1020.ppd.gz >/tmp/hp1020.ppd
 		export PPD=/tmp/hp1020.ppd
-		cupsfilter -p "$PPD" -m application/vnd.cups-postscript \
+		/usr/sbin/cupsfilter -p "$PPD" -m application/vnd.cups-postscript \
 			/tests/test-page.ps >/tmp/cupsfilter.ps
 		test -s /tmp/cupsfilter.ps
 		foomatic-rip 1 ci hp1020-test 1 "" /tmp/cupsfilter.ps \
