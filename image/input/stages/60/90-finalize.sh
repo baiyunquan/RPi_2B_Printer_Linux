@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 chroot_exec apk cache clean
 rm -rf "$ROOTFS_PATH/var/cache/apk/"*

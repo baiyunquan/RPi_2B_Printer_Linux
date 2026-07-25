@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 # The builder creates a password hash before Stage 60. Lock it unconditionally.
 chroot_exec passwd -l root

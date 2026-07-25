@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 chown root:lp "$ROOTFS_PATH/etc/cups/cupsd.conf"
 chmod 640 "$ROOTFS_PATH/etc/cups/cupsd.conf"

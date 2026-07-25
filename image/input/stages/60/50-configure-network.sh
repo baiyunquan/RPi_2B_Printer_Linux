@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 printf '%s\n' hp1020 >"$ROOTFS_PATH/etc/hostname"
 if [ "${ENABLE_AVAHI:-true}" = true ]; then

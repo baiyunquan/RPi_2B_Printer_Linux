@@ -1,5 +1,7 @@
 #!/bin/sh
-set -eu
+
+# This file is sourced by raspi-alpine/builder; do not change the caller's
+# shell options.
 
 rootfs_overlay="$INPUT_PATH/rootfs"
 [ -d "$rootfs_overlay" ] || {

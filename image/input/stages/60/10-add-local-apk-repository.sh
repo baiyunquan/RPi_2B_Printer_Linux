@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 repository="$INPUT_PATH/repository"
 [ -f "$repository/armv7/APKINDEX.tar.gz" ] || {

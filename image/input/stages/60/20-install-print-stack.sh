@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 chroot_exec apk update
 chroot_exec apk add \

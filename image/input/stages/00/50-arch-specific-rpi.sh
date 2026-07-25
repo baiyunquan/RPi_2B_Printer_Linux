@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 # Override the builder stage so the Raspberry Pi kernel and bootloader cannot
 # silently advance within the Alpine stable branch.

@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
 
 firmware="$ROOTFS_PATH/usr/share/foo2zjs/firmware/sihp1020.dl"
 [ -s "$firmware" ] || {
