@@ -1,0 +1,14 @@
+/cache/*
+!/cache/.gitkeep
+/output/*
+!/output/.gitkeep
+/work/
+/image/input/firmware/
+/image/input/repository/
+*.apk
+*.img
+*.img.gz
+*.dl
+*.tar.gz
+*.zip
+.DS_Store

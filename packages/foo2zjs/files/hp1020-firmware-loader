@@ -1,0 +1,118 @@
+#!/bin/sh
+set -eu
+
+FIRMWARE=/usr/share/foo2zjs/firmware/sihp1020.dl
+LOCK=/run/lock/hp1020-firmware
+QUEUE=hp1020
+
+log() {
+	logger -t hp1020 "$*"
+	printf '%s\n' "hp1020: $*" >&2
+}
+
+firmware_loaded() {
+	for id in /sys/class/usb/lp*/device/ieee1284_id; do
+		[ -r "$id" ] || continue
+		grep -qi 'LaserJet 1020.*FWVER' "$id" && return 0
+	done
+	backend=/usr/lib/cups/backend/usb
+	[ -x "$backend" ] &&
+		"$backend" 2>/dev/null | grep -i 'LaserJet 1020' | grep -q 'FWVER'
+}
+
+find_device() {
+	for dev in "${1:-}" /dev/usb/lp0 /dev/usb/lp1 /dev/lp0; do
+		[ -n "$dev" ] && [ -c "$dev" ] && {
+			printf '%s\n' "$dev"
+			return 0
+		}
+	done
+	return 1
+}
+
+ensure_queue() {
+	command -v lpadmin >/dev/null 2>&1 || return 0
+	lpstat -p "$QUEUE" >/dev/null 2>&1 && {
+		cupsenable "$QUEUE" >/dev/null 2>&1 || true
+		cupsaccept "$QUEUE" >/dev/null 2>&1 || true
+		return 0
+	}
+
+	uri=$(
+		lpinfo -v 2>/dev/null |
+			awk 'tolower($0) ~ /usb:.*(hp|hewlett-packard).*laserjet.*1020/ { print $2; exit }'
+	)
+	[ -n "$uri" ] || uri='usb://HP/LaserJet%201020'
+	ppd=/usr/share/cups/model/HP-LaserJet_1020.ppd.gz
+	[ -r "$ppd" ] || {
+		log "cannot create queue: missing $ppd"
+		return 1
+	}
+	lpadmin -p "$QUEUE" -E -v "$uri" -P "$ppd"
+	lpadmin -d "$QUEUE"
+	log "created CUPS queue $QUEUE using $uri"
+}
+
+main() {
+	mkdir -p /run/lock
+	if ! mkdir "$LOCK" 2>/dev/null; then
+		exit 0
+	fi
+	trap 'rmdir "$LOCK" 2>/dev/null || true' EXIT INT TERM
+
+	[ -r "$FIRMWARE" ] || {
+		log "firmware is missing; rebuild with scripts/fetch-hp1020-firmware.sh"
+		exit 1
+	}
+
+	if firmware_loaded; then
+		log "firmware already loaded"
+		ensure_queue
+		exit 0
+	fi
+
+	device=
+	count=0
+	while [ "$count" -lt 30 ]; do
+		device=$(find_device "${1:-}") && break
+		count=$((count + 1))
+		sleep 1
+	done
+	[ -n "$device" ] || {
+		log "printer device node did not appear"
+		exit 1
+	}
+
+	was_running=false
+	if rc-service cupsd status >/dev/null 2>&1; then
+		was_running=true
+		rc-service cupsd stop >/dev/null 2>&1 || true
+	fi
+	log "uploading firmware to $device"
+	if ! dd if="$FIRMWARE" of="$device" bs=64k conv=fsync 2>/dev/null; then
+		if [ "$was_running" = true ]; then
+			rc-service cupsd start >/dev/null 2>&1 || true
+		fi
+		log "firmware upload failed"
+		exit 1
+	fi
+	sleep 4
+	if [ "$was_running" = true ]; then
+		rc-service cupsd start >/dev/null 2>&1 || true
+	fi
+
+	count=0
+	while [ "$count" -lt 20 ]; do
+		if firmware_loaded; then
+			log "firmware upload confirmed"
+			ensure_queue
+			exit 0
+		fi
+		count=$((count + 1))
+		sleep 1
+	done
+	log "firmware sent; re-enumeration was not confirmed"
+	ensure_queue || true
+}
+
+main "$@"

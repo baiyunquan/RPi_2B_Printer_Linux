@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+count=0
+while [ "$count" -lt 120 ]; do
+	for dev in /dev/usb/lp0 /dev/usb/lp1 /dev/lp0; do
+		if [ -c "$dev" ]; then
+			exec /usr/local/libexec/hp1020-firmware-loader "$dev"
+		fi
+	done
+	count=$((count + 1))
+	sleep 1
+done
+
+logger -t hp1020 "printer not present during first-boot discovery window"

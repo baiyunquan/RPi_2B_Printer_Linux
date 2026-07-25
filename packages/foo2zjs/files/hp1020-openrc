@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+# shellcheck shell=sh disable=SC2034
+
+description="Discover HP LaserJet 1020 and load its firmware"
+command="/usr/local/libexec/hp1020-firstboot"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+	need cupsd
+	after udev-trigger
+	use dbus
+}

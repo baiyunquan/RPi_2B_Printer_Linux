@@ -1,0 +1,181 @@
+name: Build image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      enable_avahi:
+        description: Enable Avahi/mDNS advertisement
+        type: boolean
+        default: true
+      run_qemu:
+        description: Run the optional QEMU boot smoke test
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      enable_avahi:
+        type: boolean
+        default: true
+      run_qemu:
+        type: boolean
+        default: false
+  schedule:
+    - cron: "17 3 1 * *"
+
+permissions:
+  contents: read
+
+env:
+  ALPINE_VERSION: "3.23"
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install linters
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes shellcheck
+          python -m pip install --disable-pip-version-check yamllint
+      - name: Static project checks
+        run: tests/test-static.sh
+      - name: ShellCheck
+        run: |
+          find scripts tests packages/foo2zjs/files image/input \
+            -type f \( -name '*.sh' -o -perm -u+x \) -print0 |
+            xargs -0 shellcheck
+      - name: Validate shell and YAML syntax
+        run: |
+          sh -n packages/foo2zjs/APKBUILD
+          yamllint -d '{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}' .github
+
+  build-foo2zjs:
+    needs: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Enable arm/v7 emulation
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+        with:
+          platforms: arm
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Cache source downloads
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: cache/apk
+          key: foo2zjs-${{ runner.os }}-${{ hashFiles('packages/foo2zjs/APKBUILD', 'config/sources.lock') }}
+      - name: Build signed armv7 APK repository
+        run: scripts/build-foo2zjs-apk.sh
+      - name: Verify package installation
+        run: tests/test-package.sh
+      - name: Verify CUPS filter chain
+        run: tests/test-cups-filter.sh
+      - name: Upload APK repository
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: foo2zjs-armv7-apk
+          path: output/apk/repository
+          retention-days: 7
+          if-no-files-found: error
+
+  build-image:
+    needs: build-foo2zjs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      ENABLE_AVAHI: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call') && inputs.enable_avahi == false && 'false' || 'true' }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Enable arm/v7 emulation
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+        with:
+          platforms: arm
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Restore builder cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            cache/builder
+            work/sources
+          key: image-${{ runner.os }}-${{ hashFiles('config/sources.lock', 'config/build.env') }}
+      - name: Download APK repository
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: foo2zjs-armv7-apk
+          path: output/apk/repository
+      - name: Fetch and verify printer firmware
+        env:
+          HP1020_FIRMWARE_B64: ${{ secrets.HP1020_FIRMWARE_B64 }}
+        run: |
+          if [ -n "$HP1020_FIRMWARE_B64" ]; then
+            umask 077
+            printf '%s' "$HP1020_FIRMWARE_B64" | base64 --decode >/tmp/sihp1020.dl
+            HP1020_FIRMWARE_FILE=/tmp/sihp1020.dl scripts/fetch-hp1020-firmware.sh
+          else
+            scripts/fetch-hp1020-firmware.sh
+          fi
+      - name: Build SD card images
+        run: scripts/build-image.sh
+      - name: Upload images for verification
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hp1020-alpine-rpi-image-unverified
+          path: output/image
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+
+  verify-image:
+    needs: build-image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Enable arm/v7 emulation
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+        with:
+          platforms: arm
+      - name: Download images
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: hp1020-alpine-rpi-image-unverified
+          path: output/image
+      - name: Inspect partition and root filesystem
+        run: sudo --preserve-env=PATH tests/test-image-layout.sh
+      - name: Verify checksums and manifests
+        run: |
+          cd output/image
+          sha256sum --check sdcard.img.gz.sha256
+          sha256sum --check sdcard_update.img.gz.sha256
+          python -m json.tool build-manifest.json >/dev/null
+          test -s packages-manifest.txt
+      - name: Optional QEMU boot smoke test
+        if: ${{ inputs.run_qemu == true }}
+        env:
+          RUN_QEMU_SMOKE_TEST: "true"
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes qemu-system-arm
+          gzip -dc output/image/sdcard.img.gz >/tmp/sdcard.img
+          scripts/qemu-smoke-test.sh /tmp/sdcard.img qemu-smoke.log
+      - name: Upload verified images
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hp1020-alpine-rpi-${{ github.sha }}
+          path: output/image
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error

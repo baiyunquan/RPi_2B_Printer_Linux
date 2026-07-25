@@ -1,0 +1,69 @@
+# Contributor: hp1020-alpine-rpi contributors
+# Maintainer: hp1020-alpine-rpi contributors
+pkgname=foo2zjs
+pkgver=20260725
+pkgrel=0
+pkgdesc="OpenPrinting foo2zjs printer driver"
+url="https://github.com/OpenPrinting/foo2zjs"
+arch="armv7"
+license="GPL-2.0-or-later"
+depends=""
+makedepends="cups-dev gzip"
+subpackages="$pkgname-cups:cups:noarch $pkgname-hp1020:hp1020:noarch"
+options="!check"
+_commit=f8500e3b1de02b5d88330ebd4d2ea079e2bebbfd
+source="$pkgname-$_commit.tar.gz::https://github.com/OpenPrinting/foo2zjs/archive/$_commit.tar.gz
+	hp1020-firmware-loader
+	hp1020-firstboot
+	hp1020-openrc
+	hp1020-udev.rules
+	"
+builddir="$srcdir/$pkgname-$_commit"
+
+build() {
+	make jbig.o jbig_ar.o
+	make LIBJBG="jbig.o jbig_ar.o" \
+		foo2zjs arm2hpdl foo2zjs-wrapper foo2zjs-pstops
+}
+
+package() {
+	install -Dm755 foo2zjs "$pkgdir/usr/bin/foo2zjs"
+	install -Dm755 arm2hpdl "$pkgdir/usr/bin/arm2hpdl"
+	install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
+
+cups() {
+	pkgdesc="CUPS filter and HP LaserJet 1020 PPD for foo2zjs"
+	depends="$pkgname=$pkgver-r$pkgrel ghostscript cups-filters"
+
+	install -Dm755 "$builddir/foo2zjs-wrapper" \
+		"$subpkgdir/usr/bin/foo2zjs-wrapper"
+	install -Dm755 "$builddir/foo2zjs-pstops" \
+		"$subpkgdir/usr/bin/foo2zjs-pstops"
+	install -d "$subpkgdir/usr/share/cups/model"
+	gzip -9c "$builddir/PPD/HP-LaserJet_1020.ppd" \
+		> "$subpkgdir/usr/share/cups/model/HP-LaserJet_1020.ppd.gz"
+}
+
+hp1020() {
+	pkgdesc="HP LaserJet 1020 firmware hotplug integration"
+	depends="$pkgname-cups=$pkgver-r$pkgrel cups usbutils"
+
+	install -Dm755 "$srcdir/hp1020-firmware-loader" \
+		"$subpkgdir/usr/local/libexec/hp1020-firmware-loader"
+	install -Dm755 "$srcdir/hp1020-firstboot" \
+		"$subpkgdir/usr/local/libexec/hp1020-firstboot"
+	install -Dm755 "$srcdir/hp1020-openrc" \
+		"$subpkgdir/etc/init.d/hp1020"
+	install -Dm644 "$srcdir/hp1020-udev.rules" \
+		"$subpkgdir/etc/udev/rules.d/70-hp1020.rules"
+	install -d "$subpkgdir/usr/share/foo2zjs/firmware"
+}
+
+sha512sums="
+f040813b35f7c900fce9ad6565a1c6d54e42bde8405cdaf933a7c460b207490b4fb78a98ab1aaed2cbd43cd1c5fe09c3831b26d7da30c2e1c1e78b1a1886dc07  foo2zjs-f8500e3b1de02b5d88330ebd4d2ea079e2bebbfd.tar.gz
+a83829cb26ed12aa9ac8ad5301fc0c647bab772360416d8e435ad41256e815419e9c6414530e7a38cc2cb69691ae4bff9d8755db0331cee948af4c6019fb4ec2  hp1020-firmware-loader
+62a46549bd59c906b9440896955c6cb5a838da32498ccdba3cb4f8a3ee49286b3af42571f2e09c81779e7283eb68db86818fb43f20e492a903b0d84d78899c4a  hp1020-firstboot
+cd2ad186e180781058f0aa116e80d14281f380cbd3fecf9ffb4d0293ada5b0a118dd67d05993631367d519b7038f2ea0751ef366d7a6ec6dc5f11391dfc1473b  hp1020-openrc
+413023f17c5e7d81828ed0bc99cde9e7931b17decc23431caeb91280394cbe546b64aa7d4fd06a0be10d77844d1f67f61b60c06774deb961b3e708c05ac5ce16  hp1020-udev.rules
+"

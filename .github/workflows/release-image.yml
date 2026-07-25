@@ -1,0 +1,53 @@
+name: Release image
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to publish
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-image.yml
+    with:
+      enable_avahi: true
+      run_qemu: false
+    secrets: inherit
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require explicit firmware redistribution approval
+        env:
+          ALLOW_FIRMWARE_REDISTRIBUTION: ${{ vars.ALLOW_FIRMWARE_REDISTRIBUTION }}
+        run: |
+          test "$ALLOW_FIRMWARE_REDISTRIBUTION" = true || {
+            echo "Set repository variable ALLOW_FIRMWARE_REDISTRIBUTION=true only after legal review."
+            exit 1
+          }
+      - name: Download verified image
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: hp1020-alpine-rpi-*
+          path: release
+          merge-multiple: true
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --verify-tag \
+              --title "HP 1020 Alpine Raspberry Pi $RELEASE_TAG" \
+              --generate-notes
+          fi
+          gh release upload "$RELEASE_TAG" release/* --clobber
