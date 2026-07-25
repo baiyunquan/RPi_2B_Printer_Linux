@@ -25,7 +25,9 @@ docker run --rm --privileged --platform linux/arm/v7 \
 		cp /src/packages/foo2zjs/APKBUILD /home/build/pkg/
 		cp /src/packages/foo2zjs/files/* /home/build/pkg/
 		chown -R build:build /home/build
-		su build -c "cd /home/build/pkg && abuild-keygen -a -n && abuild checksum && abuild -r"
+		su build -c "cd /home/build/pkg && abuild-keygen -a -n && \
+			sudo cp /home/build/.abuild/*.rsa.pub /etc/apk/keys/ && \
+			abuild checksum && abuild -r"
 		repo_index=$(find /home/build/packages -name APKINDEX.tar.gz -type f | head -n 1)
 		test -n "$repo_index"
 		cp -a "$(dirname "$repo_index")" /out/repository
