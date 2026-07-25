@@ -1,0 +1,28 @@
+#!/bin/sh
+set -eu
+
+iface=${1:-${INTERFACE:-}}
+
+case "$iface" in
+	wlan*) ;;
+	*) exit 0 ;;
+esac
+
+[ -d "/sys/class/net/$iface" ] || exit 0
+
+pidfile="/run/wifi-hotplug-$iface.pid"
+worker=/usr/libexec/wifi-hotplug-worker
+
+[ -x "$worker" ] || exit 0
+
+if [ -x /sbin/start-stop-daemon ]; then
+	exec /sbin/start-stop-daemon \
+		--start \
+		--background \
+		--make-pidfile \
+		--pidfile "$pidfile" \
+		--exec "$worker" \
+		-- "$iface"
+fi
+
+"$worker" "$iface" >/dev/null 2>&1 &

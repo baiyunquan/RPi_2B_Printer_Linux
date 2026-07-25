@@ -47,6 +47,23 @@ ip link
 `ADDITIONAL_KERNEL_MODULES` 是否仍包含对应的 `rtw88_8822cu` 或
 `rtw88_8821cu`。
 
+## RTL8822CU 或 RTL8811CU 已出现但没有联网
+
+这类 Realtek USB 网卡可能先以 `0bda:1a2b` 存储设备模式出现，稍后才切换
+成无线网卡。镜像通过 udev 在 `wlan0` 出现时触发 Wi-Fi 启动，检查：
+
+```sh
+rc-service wpa_supplicant status
+iw dev wlan0 link
+ip addr show wlan0
+grep -v 'psk=' /etc/wpa_supplicant/wpa_supplicant.conf
+/usr/libexec/wifi-hotplug wlan0
+dmesg | grep -E 'wlan0|wpa|rtw|8821|8822'
+```
+
+`/etc/network/interfaces` 中应保留 `iface wlan0 inet dhcp`，但不要添加
+`auto wlan0`，否则开机时 `wlan0` 尚未出现会导致 `networking` 过早失败。
+
 ## 作业卡住
 
 ```sh

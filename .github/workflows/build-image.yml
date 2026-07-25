@@ -50,9 +50,11 @@ jobs:
         run: tests/test-static.sh
       - name: ShellCheck
         run: |
-          find scripts tests packages/foo2zjs/files image/input \
-            -type f \( -name '*.sh' -o -perm -u+x \) -print0 |
-            xargs -0 shellcheck
+          {
+            find scripts tests packages/foo2zjs/files image/input \
+              -type f \( -name '*.sh' -o -perm -u+x \) -print0
+            find image/rootfs/usr/libexec -type f -print0
+          } | xargs -0 shellcheck
       - name: Validate shell and YAML syntax
         run: |
           sh -n packages/foo2zjs/APKBUILD

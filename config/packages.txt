@@ -10,6 +10,8 @@ eudev
 udev-init-scripts
 udev-init-scripts-openrc
 usbutils
+iw
+wpa_supplicant
 linux-firmware-rtw88
 foo2zjs
 foo2zjs-cups

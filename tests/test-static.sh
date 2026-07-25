@@ -14,6 +14,9 @@ image/input/stages/10/90-enable-writable-partitions.sh
 image/input/stages/60/20-install-print-stack.sh
 image/rootfs/etc/cups/cupsd.conf
 image/rootfs/etc/avahi/services/hp1020.service
+image/rootfs/etc/udev/rules.d/80-wifi-hotplug.rules
+image/rootfs/usr/libexec/wifi-hotplug
+image/rootfs/usr/libexec/wifi-hotplug-worker
 scripts/build-foo2zjs-apk.sh
 scripts/fetch-hp1020-firmware.sh
 scripts/build-image.sh
@@ -29,6 +32,8 @@ done
 
 grep -q '^ARCH=armv7$' config/build.env
 grep -q '^DEV=eudev$' config/build.env
+grep -q '^iw$' config/packages.txt
+grep -q '^wpa_supplicant$' config/packages.txt
 grep -q \
 	'^ADDITIONAL_KERNEL_MODULES="usblp rtw88_8822cu rtw88_8821cu"$' \
 	config/build.env
@@ -51,6 +56,16 @@ grep -q '^SIZE_DATA=64M$' config/build.env
 grep -q 'DROPBEAR_OPTS="-p 22"' image/input/stages/60/60-configure-security.sh
 grep -q 'ATTR{idVendor}=="03f0"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'ATTR{idProduct}=="2b17"' packages/foo2zjs/files/hp1020-udev.rules
+grep -q 'SUBSYSTEM=="net"' image/rootfs/etc/udev/rules.d/80-wifi-hotplug.rules
+grep -q 'KERNEL=="wlan\*"' image/rootfs/etc/udev/rules.d/80-wifi-hotplug.rules
+grep -q 'RUN+="/usr/libexec/wifi-hotplug %k"' \
+	image/rootfs/etc/udev/rules.d/80-wifi-hotplug.rules
+grep -q 'chroot_exec apk add iw wpa_supplicant' \
+	image/input/stages/60/50-configure-network.sh
+grep -q '^iface wlan0 inet dhcp$' image/input/stages/60/50-configure-network.sh
+grep -q 'rc-service wpa_supplicant start' \
+	image/rootfs/usr/libexec/wifi-hotplug-worker
+grep -q 'ifup "$iface"' image/rootfs/usr/libexec/wifi-hotplug-worker
 grep -q 'Port 631' image/rootfs/etc/cups/cupsd.conf
 test "$(grep -c 'Allow @LOCAL' image/rootfs/etc/cups/cupsd.conf)" -eq 3
 grep -q 'chroot_exec addgroup root lpadmin' \

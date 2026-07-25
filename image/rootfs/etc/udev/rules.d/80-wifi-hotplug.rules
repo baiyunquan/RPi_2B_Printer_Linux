@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="wlan*", RUN+="/usr/libexec/wifi-hotplug %k"
+ACTION=="move", SUBSYSTEM=="net", KERNEL=="wlan*", RUN+="/usr/libexec/wifi-hotplug %k"

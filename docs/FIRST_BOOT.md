@@ -20,6 +20,8 @@ lsmod | grep usblp
 modprobe rtw88_8822cu
 modprobe rtw88_8821cu
 ip link
+rc-service wpa_supplicant status
+/usr/libexec/wifi-hotplug wlan0
 dmesg | grep -E 'rtw88|8821|8822'
 dmesg | grep hp1020
 ```

@@ -1,0 +1,68 @@
+#!/bin/sh
+set -eu
+
+iface=${1:?wireless interface required}
+pidfile="/run/wifi-hotplug-$iface.pid"
+wpa_conf=/etc/wpa_supplicant/wpa_supplicant.conf
+interfaces=/etc/network/interfaces
+
+log() {
+	logger -t wifi-hotplug "$*"
+}
+
+cleanup() {
+	rm -f "$pidfile"
+}
+trap cleanup EXIT INT TERM
+
+case "$iface" in
+	wlan*) ;;
+	*) exit 0 ;;
+esac
+
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+	[ -d "/sys/class/net/$iface" ] && break
+	sleep 1
+done
+
+if ! [ -d "/sys/class/net/$iface" ]; then
+	log "$iface disappeared before Wi-Fi setup"
+	exit 0
+fi
+
+ip link set "$iface" up 2>/dev/null || true
+
+if ! [ -s "$wpa_conf" ]; then
+	log "$wpa_conf is missing; skipping $iface Wi-Fi association"
+	exit 0
+fi
+
+if ! wpa_cli -i "$iface" ping >/dev/null 2>&1; then
+	if rc-service wpa_supplicant status >/dev/null 2>&1; then
+		rc-service wpa_supplicant restart >/dev/null 2>&1 || true
+	else
+		rc-service wpa_supplicant start >/dev/null 2>&1 || true
+	fi
+fi
+
+for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 \
+	16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+	if wpa_cli -i "$iface" status 2>/dev/null |
+		grep -q '^wpa_state=COMPLETED$'; then
+		break
+	fi
+	sleep 2
+done
+
+if ! wpa_cli -i "$iface" status 2>/dev/null |
+	grep -q '^wpa_state=COMPLETED$'; then
+	log "$iface did not associate with an access point"
+	exit 0
+fi
+
+if [ -s "$interfaces" ] &&
+	grep -Eq "^[[:space:]]*iface[[:space:]]+$iface[[:space:]]" "$interfaces"; then
+	ifup "$iface" >/dev/null 2>&1 || log "ifup $iface failed"
+else
+	log "$interfaces has no iface stanza for $iface"
+fi
