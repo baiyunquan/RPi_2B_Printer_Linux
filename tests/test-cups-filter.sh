@@ -3,7 +3,7 @@ set -eu
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 repository=${1:-"$root/output/apk/repository"}
-test -s "$repository/APKINDEX.tar.gz"
+test -s "$repository/armv7/APKINDEX.tar.gz"
 
 docker run --rm --privileged --platform linux/arm/v7 \
 	-v "$repository:/repo:ro" \

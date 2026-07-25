@@ -2,7 +2,7 @@
 set -eu
 
 repository="$INPUT_PATH/repository"
-[ -f "$repository/APKINDEX.tar.gz" ] || {
+[ -f "$repository/armv7/APKINDEX.tar.gz" ] || {
 	echo "local APKINDEX is missing; build foo2zjs first" >&2
 	exit 1
 }

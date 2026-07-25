@@ -13,7 +13,7 @@ output=${IMAGE_OUTPUT_DIR:-"$PROJECT_ROOT/output/image"}
 cache=${BUILDER_CACHE_DIR:-"$PROJECT_ROOT/cache/builder"}
 prepared="$PROJECT_ROOT/work/image-input"
 
-[ -s "$apk_repository/APKINDEX.tar.gz" ] || {
+[ -s "$apk_repository/armv7/APKINDEX.tar.gz" ] || {
 	echo "APK repository missing; run scripts/build-foo2zjs-apk.sh" >&2
 	exit 1
 }

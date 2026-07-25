@@ -30,12 +30,13 @@ docker run --rm --privileged --platform linux/arm/v7 \
 			abuild checksum && abuild -r"
 		repo_index=$(find /home/build/packages -name APKINDEX.tar.gz -type f | head -n 1)
 		test -n "$repo_index"
-		cp -a "$(dirname "$repo_index")" /out/repository
+		mkdir -p /out/repository
+		cp -a "$(dirname "$repo_index")" /out/repository/
 		cp /home/build/.abuild/*.rsa.pub /out/repository/
 	'
 
-test -s "$output/repository/APKINDEX.tar.gz"
-apk_count=$(find "$output/repository" -maxdepth 1 -name '*.apk' -type f | wc -l | tr -d ' ')
+test -s "$output/repository/armv7/APKINDEX.tar.gz"
+apk_count=$(find "$output/repository/armv7" -maxdepth 1 -name '*.apk' -type f | wc -l | tr -d ' ')
 [ "$apk_count" -ge 3 ] || {
 	echo "expected at least three APK files, found $apk_count" >&2
 	exit 1
