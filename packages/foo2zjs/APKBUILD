@@ -1,5 +1,5 @@
-# Contributor: hp1020-alpine-rpi contributors
-# Maintainer: hp1020-alpine-rpi contributors
+# Contributor: hp1020-alpine-rpi contributors <baiyunquan@users.noreply.github.com>
+# Maintainer: hp1020-alpine-rpi contributors <baiyunquan@users.noreply.github.com>
 pkgname=foo2zjs
 pkgver=20260725
 pkgrel=0

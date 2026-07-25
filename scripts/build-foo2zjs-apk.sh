@@ -22,8 +22,8 @@ docker run --rm --privileged --platform linux/arm/v7 \
 		addgroup build abuild
 		echo "build ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/abuild
 		install -d -o build -g build /home/build/pkg /home/build/.abuild
-		cp -a /src/packages/foo2zjs/. /home/build/pkg/
-		cp -a /home/build/pkg/files/. /home/build/pkg/
+		cp /src/packages/foo2zjs/APKBUILD /home/build/pkg/
+		cp /src/packages/foo2zjs/files/* /home/build/pkg/
 		chown -R build:build /home/build
 		su build -c "cd /home/build/pkg && abuild-keygen -a -n && abuild checksum && abuild -r"
 		repo_index=$(find /home/build/packages -name APKINDEX.tar.gz -type f | head -n 1)
