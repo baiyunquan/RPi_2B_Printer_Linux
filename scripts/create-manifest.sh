@@ -45,8 +45,8 @@ cp "$PROJECT_ROOT/config/packages.txt" "$output/packages-manifest.txt"
 
 for image in "$output"/sdcard*.img.gz; do
 	[ -f "$image" ] || continue
-	sha256_file "$image" >"$image.sha256.tmp"
-	printf '%s  %s\n' "$(cat "$image.sha256.tmp")" "$(basename "$image")" \
-		>"$image.sha256"
-	rm "$image.sha256.tmp"
+	checksum=$(sha256_file "$image")
+	printf '%s  %s\n' "$checksum" "$(basename "$image")" \
+		>"$image.sha256.tmp"
+	mv -f "$image.sha256.tmp" "$image.sha256"
 done
