@@ -30,8 +30,14 @@ done
 grep -q '^ARCH=armv7$' config/build.env
 grep -q '^DEV=eudev$' config/build.env
 grep -q \
-	'^ADDITIONAL_KERNEL_MODULES=usblp rtw88_8822cu rtw88_8821cu$' \
+	'^ADDITIONAL_KERNEL_MODULES="usblp rtw88_8822cu rtw88_8821cu"$' \
 	config/build.env
+(
+	# shellcheck disable=SC1091
+	. ./config/build.env
+	[ "$ADDITIONAL_KERNEL_MODULES" = \
+		"usblp rtw88_8822cu rtw88_8821cu" ]
+)
 grep -q '^LINUX_FIRMWARE_RTW88_VERSION=20251125-r1$' config/sources.lock
 grep -q "linux-firmware-rtw88=\$LINUX_FIRMWARE_RTW88_VERSION" \
 	image/input/stages/00/50-arch-specific-rpi.sh
