@@ -39,7 +39,7 @@ docker run --rm --privileged \
 	-e "BUILDER_COMMIT=$BUILDER_COMMIT" \
 	-e "FOO2ZJS_COMMIT=$FOO2ZJS_COMMIT" \
 	-e "ENABLE_AVAHI=${ENABLE_AVAHI:-true}" \
-	-e "ENABLE_SSH=${ENABLE_SSH:-false}" \
+	-e "ENABLE_SSH=${ENABLE_SSH:-true}" \
 	-e "SSH_AUTHORIZED_KEYS=${SSH_AUTHORIZED_KEYS:-}" \
 	-v "$prepared:/input:ro" \
 	-v "$output:/output" \

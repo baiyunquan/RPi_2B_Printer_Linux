@@ -29,8 +29,10 @@ done
 grep -q '^ARCH=armv7$' config/build.env
 grep -q '^DEV=eudev$' config/build.env
 grep -q '^ADDITIONAL_KERNEL_MODULES=usblp$' config/build.env
-grep -q '^DEFAULT_DROPBEAR_ENABLED=false$' config/build.env
-grep -q 'passwd -l root' image/input/stages/60/60-configure-security.sh
+grep -q '^DEFAULT_DROPBEAR_ENABLED=true$' config/build.env
+grep -q '^DEFAULT_ROOT_PASSWORD=1234$' config/build.env
+grep -q '^ENABLE_SSH=true$' config/build.env
+grep -q 'DROPBEAR_OPTS="-p 22"' image/input/stages/60/60-configure-security.sh
 grep -q 'ATTR{idVendor}=="03f0"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'ATTR{idProduct}=="2b17"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'Port 631' image/rootfs/etc/cups/cupsd.conf

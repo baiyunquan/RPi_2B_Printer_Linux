@@ -8,7 +8,7 @@
 - 每次 HP 1020 通电或 USB 重连时自动加载 `sihp1020.dl`。
 - 自动创建名为 `hp1020` 的 CUPS 队列，并通过局域网提供 IPP。
 - 默认启用 Avahi，地址为 `hp1020.local`；可在构建时关闭。
-- 默认锁定 root 密码并关闭远程 SSH；只有提供公钥时才可启用。
+- 默认启用 Dropbear SSH，允许使用 root 和密码 `1234` 登录。
 - GitHub Actions 构建已签名的 armv7 APK、本地镜像、校验文件和版本清单。
 - Git 永不跟踪 HP 固件或生成的镜像。
 
@@ -35,6 +35,16 @@ packages-manifest.txt
 ```
 
 固件默认在构建时从 foo2zjs 当前使用的下载源获取，并按 `config/firmware-checksums.txt` 校验。也可设置 `HP1020_FIRMWARE_FILE=/安全路径/sihp1020.dl` 使用私有来源。详见 [构建说明](docs/BUILDING.md) 和 [固件许可说明](docs/FIRMWARE-LICENSE.md)。
+
+## SSH 登录
+
+设备启动并取得网络地址后，可直接登录：
+
+```sh
+ssh root@hp1020.local
+```
+
+默认密码为 `1234`。这是便于首次部署的弱密码，只应在受信任的隔离内网使用；投入长期运行前应立即执行 `passwd` 修改密码，或在构建时关闭 SSH。
 
 ## 版本锁定
 

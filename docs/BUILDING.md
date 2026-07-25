@@ -45,15 +45,20 @@ sudo scripts/inspect-image.sh
 ENABLE_AVAHI=false scripts/build-image.sh
 ```
 
-启用 SSH 必须同时传入公钥：
+镜像默认启用 Dropbear SSH，root 默认密码为 `1234`。可额外写入公钥：
 
 ```sh
-ENABLE_SSH=true \
 SSH_AUTHORIZED_KEYS="$(cat ~/.ssh/id_ed25519.pub)" \
 scripts/build-image.sh
 ```
 
-镜像中 root 密码始终被锁定。不要通过修改 builder 默认密码来开启远程登录。
+如需关闭 SSH：
+
+```sh
+ENABLE_SSH=false scripts/build-image.sh
+```
+
+默认密码仅适合受信任的隔离内网。首次登录后应立即运行 `passwd` 修改 root 密码。
 
 ## 私有固件
 
