@@ -6,6 +6,7 @@ SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/lib/common.sh"
 
 need_command docker
+"$SCRIPT_DIR/clone-sources.sh" >/dev/null
 
 output=${1:-"$PROJECT_ROOT/output/apk"}
 rm -rf "$output"

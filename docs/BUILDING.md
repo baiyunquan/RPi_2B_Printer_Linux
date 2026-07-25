@@ -16,6 +16,14 @@ util-linux
 
 跨架构执行依赖 arm/v7 binfmt。GitHub Actions 使用 `docker/setup-qemu-action` 自动配置；本地可使用发行版的 `qemu-user-static`。
 
+克隆仓库时必须初始化 submodule：
+
+```sh
+git clone --recurse-submodules https://github.com/baiyunquan/RPi_2B_Printer_Linux.git
+cd RPi_2B_Printer_Linux
+scripts/clone-sources.sh
+```
+
 ## 完整构建
 
 ```sh
@@ -27,7 +35,7 @@ scripts/build-image.sh
 sudo scripts/inspect-image.sh
 ```
 
-`build-foo2zjs-apk.sh` 在 arm/v7 Alpine 容器内运行 `abuild`，输出三个已签名包和 APKINDEX。`build-image.sh` 从锁定 commit 构建 builder 容器，不使用浮动的 `latest` 镜像。
+`build-foo2zjs-apk.sh` 在 arm/v7 Alpine 容器内运行 `abuild`，输出三个已签名包和 APKINDEX。`build-image.sh` 直接从锁定的 `vendor/builder` submodule 构建 builder 容器，不使用浮动的 `latest` 镜像。固件转换工具来自锁定的 `vendor/foo2zjs` submodule。
 
 ## 构建参数
 

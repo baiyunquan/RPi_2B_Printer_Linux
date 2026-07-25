@@ -35,6 +35,16 @@ grep -q 'ATTR{idVendor}=="03f0"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'ATTR{idProduct}=="2b17"' packages/foo2zjs/files/hp1020-udev.rules
 grep -q 'Port 631' image/rootfs/etc/cups/cupsd.conf
 grep -q 'rp=printers/hp1020' image/rootfs/etc/avahi/services/hp1020.service
+test -f .gitmodules
+grep -q 'path = vendor/builder' .gitmodules
+grep -q 'path = vendor/foo2zjs' .gitmodules
+
+if [ -e vendor/builder/.git ] && [ -e vendor/foo2zjs/.git ]; then
+	builder_commit=$(git -C vendor/builder rev-parse HEAD)
+	foo2zjs_commit=$(git -C vendor/foo2zjs rev-parse HEAD)
+	grep -q "^BUILDER_COMMIT=$builder_commit$" config/sources.lock
+	grep -q "^FOO2ZJS_COMMIT=$foo2zjs_commit$" config/sources.lock
+fi
 
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 	if git ls-files '*.dl' '*.img' '*.img.gz' | grep -q .; then

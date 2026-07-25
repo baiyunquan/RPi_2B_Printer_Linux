@@ -1,0 +1,8 @@
+[submodule "vendor/builder"]
+	path = vendor/builder
+	url = https://github.com/raspi-alpine/builder.git
+	branch = master
+[submodule "vendor/foo2zjs"]
+	path = vendor/foo2zjs
+	url = https://github.com/OpenPrinting/foo2zjs.git
+	branch = main-fixes

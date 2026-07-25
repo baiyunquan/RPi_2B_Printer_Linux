@@ -38,7 +38,7 @@ packages-manifest.txt
 
 ## 版本锁定
 
-[sources.lock](config/sources.lock) 固定 builder、foo2zjs、固件校验值和所有 GitHub Actions 的完整 commit SHA。Raspberry Pi 启动固件采用 builder 的 `alpine` 模式，即来自 Alpine `linux-rpi` 包；对应关系记录在构建清单中。
+[sources.lock](config/sources.lock) 固定 builder、foo2zjs、固件校验值和所有 GitHub Actions 的完整 commit SHA。builder 与 foo2zjs 同时作为 `vendor/` 下的 Git submodule 固定，构建脚本会拒绝 commit 不匹配的工作树。Raspberry Pi 启动固件采用 builder 的 `alpine` 模式，即来自 Alpine `linux-rpi` 包；对应关系记录在构建清单中。
 
 ## 使用限制
 

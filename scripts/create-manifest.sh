@@ -24,11 +24,13 @@ cat >"$output/build-manifest.json" <<EOF
   "builder_base_image": "$BUILDER_BASE_IMAGE@$BUILDER_BASE_IMAGE_DIGEST",
   "builder": {
     "repository": "$BUILDER_REPOSITORY",
-    "commit": "$BUILDER_COMMIT"
+    "commit": "$BUILDER_COMMIT",
+    "submodule": "$BUILDER_SUBMODULE"
   },
   "foo2zjs": {
     "repository": "$FOO2ZJS_REPOSITORY",
-    "commit": "$FOO2ZJS_COMMIT"
+    "commit": "$FOO2ZJS_COMMIT",
+    "submodule": "$FOO2ZJS_SUBMODULE"
   },
   "raspberry_pi_firmware": {
     "branch": "$RPI_FIRMWARE_BRANCH",

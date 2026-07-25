@@ -13,5 +13,5 @@ docker build \
 	--build-arg "ALPINE_VER=${ALPINE_BRANCH#v}@${BUILDER_BASE_IMAGE_DIGEST}" \
 	--label "org.opencontainers.image.revision=$BUILDER_COMMIT" \
 	--tag "$tag" \
-	"$PROJECT_ROOT/work/sources/builder"
+	"$PROJECT_ROOT/$BUILDER_SUBMODULE"
 printf '%s\n' "$tag"

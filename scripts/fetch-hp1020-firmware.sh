@@ -35,9 +35,9 @@ verify_sha256 "$archive" "$HP1020_FIRMWARE_ARCHIVE_SHA256"
 tar -xzf "$archive" -C "$tmp" sihp1020.img
 verify_sha256 "$tmp/sihp1020.img" "$HP1020_FIRMWARE_IMAGE_SHA256"
 
-foo_source="$PROJECT_ROOT/work/sources/foo2zjs"
+foo_source="$PROJECT_ROOT/$FOO2ZJS_SUBMODULE"
 if [ ! -f "$foo_source/arm2hpdl.c" ]; then
-	"$SCRIPT_DIR/clone-sources.sh" "$PROJECT_ROOT/work/sources" >/dev/null
+	"$SCRIPT_DIR/clone-sources.sh" >/dev/null
 fi
 cc -O2 -o "$tmp/arm2hpdl" "$foo_source/arm2hpdl.c"
 "$tmp/arm2hpdl" "$tmp/sihp1020.img" >"$target"
