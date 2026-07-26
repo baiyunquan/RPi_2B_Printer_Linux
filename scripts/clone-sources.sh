@@ -25,3 +25,4 @@ sync_submodule() {
 git -C "$PROJECT_ROOT" submodule sync --recursive
 sync_submodule builder "$BUILDER_SUBMODULE" "$BUILDER_COMMIT"
 sync_submodule foo2zjs "$FOO2ZJS_SUBMODULE" "$FOO2ZJS_COMMIT"
+sync_submodule rtl8811cu "$RTL8811CU_SUBMODULE" "$RTL8811CU_COMMIT"

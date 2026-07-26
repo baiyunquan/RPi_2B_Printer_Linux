@@ -18,11 +18,11 @@ rc-service avahi-daemon status
 lpstat -t
 lsmod | grep usblp
 modprobe rtw88_8822cu
-modprobe rtw88_8821cu
+modprobe 8821cu
 ip link
 rc-service wpa_supplicant status
 /usr/libexec/wifi-hotplug wlan0
-dmesg | grep -E 'rtw88|8821|8822'
+dmesg | grep -E 'rtw88|8821cu|8822'
 dmesg | grep hp1020
 ```
 

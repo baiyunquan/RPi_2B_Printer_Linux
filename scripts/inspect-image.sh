@@ -65,6 +65,9 @@ require_file "$root/etc/udev/rules.d/70-hp1020.rules"
 require_file "$root/etc/udev/rules.d/80-wifi-hotplug.rules"
 require_file "$root/etc/init.d/hp1020"
 require_file "$root/etc/modules-load.d/hp1020.conf"
+require_file "$root/etc/modules-load.d/rtl8811cu.conf"
+require_file "$root/etc/modprobe.d/8821cu.conf"
+require_file "$root/etc/modprobe.d/rtw88_8821cu.conf"
 require_file "$root/usr/libexec/wifi-hotplug"
 require_file "$root/usr/libexec/wifi-hotplug-worker"
 require_file "$root/etc/fstab"
@@ -72,6 +75,9 @@ grep -q 'RUN+="/usr/libexec/wifi-hotplug %k"' \
 	"$root/etc/udev/rules.d/80-wifi-hotplug.rules"
 grep -q '^iface wlan0 inet dhcp$' "$root/etc/network/interfaces"
 grep -q usblp "$root/etc/modules-load.d/hp1020.conf"
+grep -q '^8821cu$' "$root/etc/modules-load.d/rtl8811cu.conf"
+grep -q '^blacklist rtw88_8821cu$' \
+	"$root/etc/modprobe.d/rtw88_8821cu.conf"
 grep -Eq '^/dev/root[[:space:]]+/[[:space:]]+ext4[[:space:]]+defaults,rw' \
 	"$root/etc/fstab"
 grep -Eq '^LABEL=BOOT[[:space:]]+/(uboot|boot)[[:space:]]+vfat[[:space:]]+defaults,rw' \
@@ -97,11 +103,14 @@ case "$root_password" in
 esac
 find "$root/lib/modules" -type f -name 'usblp.ko*' | grep -q .
 find "$root/lib/modules" -type f -name 'rtw88_8822cu.ko*' | grep -q .
-find "$root/lib/modules" -type f -name 'rtw88_8821cu.ko*' | grep -q .
+rtl8811cu_module=$(
+	find "$root/lib/modules" -type f -path '*/rtl8811cu/8821cu.ko*' \
+		-print -quit
+)
+[ -n "$rtl8811cu_module" ]
+file "$rtl8811cu_module" | grep -Eq 'ARM|EABI'
 find "$root/lib/firmware/rtw88" -maxdepth 1 -type f \
 	-name 'rtw8822c_fw.bin*' | grep -q .
-find "$root/lib/firmware/rtw88" -maxdepth 1 -type f \
-	-name 'rtw8821c_fw.bin*' | grep -q .
 file "$root/usr/bin/foo2zjs" | grep -Eq 'ARM|EABI'
 verify_sha256 "$root/usr/share/foo2zjs/firmware/sihp1020.dl" \
 	"$HP1020_FIRMWARE_DL_SHA256"

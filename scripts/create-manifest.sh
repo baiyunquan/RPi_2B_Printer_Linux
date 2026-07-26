@@ -32,6 +32,12 @@ cat >"$output/build-manifest.json" <<EOF
     "commit": "$FOO2ZJS_COMMIT",
     "submodule": "$FOO2ZJS_SUBMODULE"
   },
+  "rtl8811cu": {
+    "repository": "$RTL8811CU_REPOSITORY",
+    "commit": "$RTL8811CU_COMMIT",
+    "submodule": "$RTL8811CU_SUBMODULE",
+    "module": "8821cu"
+  },
   "raspberry_pi_firmware": {
     "branch": "$RPI_FIRMWARE_BRANCH",
     "commit": "$RPI_FIRMWARE_COMMIT",
@@ -39,7 +45,7 @@ cat >"$output/build-manifest.json" <<EOF
   },
   "wifi": {
     "chipsets": ["RTL8822CU", "RTL8811CU"],
-    "drivers": ["rtw88_8822cu", "rtw88_8821cu"],
+    "drivers": ["rtw88_8822cu", "8821cu"],
     "firmware_package": "linux-firmware-rtw88=$LINUX_FIRMWARE_RTW88_VERSION"
   },
   "hp1020_firmware_sha256": "$HP1020_FIRMWARE_DL_SHA256"

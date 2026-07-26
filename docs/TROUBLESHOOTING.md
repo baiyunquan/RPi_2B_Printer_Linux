@@ -35,17 +35,26 @@ udevadm test /sys/class/usb/lp0
 ```sh
 lsusb
 modprobe rtw88_8822cu
-modprobe rtw88_8821cu
-lsmod | grep rtw88
-find /lib/firmware/rtw88 \
-  \( -name 'rtw8822c_fw.bin*' -o -name 'rtw8821c_fw.bin*' \)
-dmesg | grep -E 'rtw88|8821|8822|firmware'
+modprobe 8821cu
+lsmod | grep -E 'rtw88|8821cu'
+modinfo 8821cu
+find /lib/firmware/rtw88 -name 'rtw8822c_fw.bin*'
+dmesg | grep -E 'rtw88|8821cu|8822|firmware'
 ip link
 ```
 
 如果 `modprobe` 报模块不存在，应检查镜像中的 `linux-rpi` 版本以及构建时
 `ADDITIONAL_KERNEL_MODULES` 是否仍包含对应的 `rtw88_8822cu` 或
-`rtw88_8821cu`。
+`8821cu`。RTL8811CU 还应检查：
+
+```sh
+grep '^blacklist rtw88_8821cu' /etc/modprobe.d/rtw88_8821cu.conf
+modinfo 8821cu | grep -E 'vermagic|0BDA.*(C811|8811)'
+```
+
+`vermagic` 必须与 `uname -r` 对应，USB alias 应包含 `0bda:c811` 或
+`0bda:8811`。厂商驱动已内置 RTL8811CU 固件，不依赖
+`rtw8821c_fw.bin`。
 
 ## RTL8822CU 或 RTL8811CU 已出现但没有联网
 
