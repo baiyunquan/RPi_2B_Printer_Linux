@@ -61,7 +61,7 @@ if ! wpa_cli -i "$iface" status 2>/dev/null |
 fi
 
 if [ -s "$interfaces" ] &&
-	grep -Eq "^[[:space:]]*iface[[:space:]]+$iface[[:space:]]" "$interfaces"; then
+	grep -Eq "^[[:space:]]*iface[[:space:]]+${iface}[[:space:]]" "$interfaces"; then
 	ifup "$iface" >/dev/null 2>&1 || log "ifup $iface failed"
 else
 	log "$interfaces has no iface stanza for $iface"

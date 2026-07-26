@@ -51,14 +51,17 @@ ssh root@hp1020.local
 
 ## RTL8822CU、RTL8811CU 无线网卡
 
-镜像使用 Linux 6.12 内核自带的 `rtw88_8822cu` 和 `rtw88_8821cu`
-驱动；RTL8811CU 由后者支持，不安装第三方 DKMS 模块。构建过程会保留
-这些模块及其依赖，并安装锁定版本的 `linux-firmware-rtw88`。插入网卡后
-可用 `ip link` 查看无线接口。无线接口由 udev 在 `wlan0` 出现时触发
-`wpa_supplicant` 和 `ifup wlan0`，避免 Realtek 网卡先枚举为
-`0bda:1a2b` 虚拟光盘再切换为无线网卡时错过开机网络服务。只需在设备上
-写入 `/etc/wpa_supplicant/wpa_supplicant.conf`，不要把 `wlan0` 设为
-`auto` 开机接口。
+RTL8822CU 使用 Linux 6.12 内核自带的 `rtw88_8822cu`。RTL8811CU 使用
+`RTL8811CU_Driver` submodule 中锁定源码编译的厂商 `8821cu` 模块；构建时
+会安装与目标内核版本相同的 `linux-rpi-dev`，编译、剥离并安装模块，然后移除
+所有编译依赖。镜像会黑名单禁用冲突的内核 `rtw88_8821cu`，并安装锁定版本的
+`linux-firmware-rtw88` 供 RTL8822CU 使用。
+
+插入网卡后可用 `ip link` 查看无线接口。无线接口由 udev 在 `wlan0` 出现时
+触发 `wpa_supplicant` 和 `ifup wlan0`，避免 Realtek 网卡先枚举为
+`0bda:1a2b` 虚拟光盘再切换为无线网卡时错过开机网络服务。只需在设备上写入
+`/etc/wpa_supplicant/wpa_supplicant.conf`，不要把 `wlan0` 设为 `auto`
+开机接口。
 
 ## CUPS 管理
 
@@ -68,7 +71,11 @@ ssh root@hp1020.local
 
 ## 版本锁定
 
-[sources.lock](config/sources.lock) 固定 builder、foo2zjs、固件校验值和所有 GitHub Actions 的完整 commit SHA。builder 与 foo2zjs 同时作为 `vendor/` 下的 Git submodule 固定，构建脚本会拒绝 commit 不匹配的工作树。Raspberry Pi 启动固件采用 builder 的 `alpine` 模式，即来自 Alpine `linux-rpi` 包；对应关系记录在构建清单中。
+[sources.lock](config/sources.lock) 固定 builder、foo2zjs、RTL8811CU
+驱动、固件校验值和所有 GitHub Actions 的完整 commit SHA。三项源码均以
+Git submodule 固定，构建脚本会拒绝 commit 不匹配的工作树。Raspberry Pi
+启动固件采用 builder 的 `alpine` 模式，即来自 Alpine `linux-rpi` 包；
+对应关系记录在构建清单中。
 
 ## 使用限制
 

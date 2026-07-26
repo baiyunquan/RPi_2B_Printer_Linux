@@ -37,9 +37,11 @@ sudo scripts/inspect-image.sh
 
 `build-foo2zjs-apk.sh` 在 arm/v7 Alpine 容器内运行 `abuild`，输出三个已签名包和 APKINDEX。`build-image.sh` 直接从锁定的 `vendor/builder` submodule 构建 builder 容器，不使用浮动的 `latest` 镜像。固件转换工具来自锁定的 `vendor/foo2zjs` submodule。
 
-RTL8822CU 和 RTL8811CU 分别使用 `linux-rpi` 6.12 自带的
-`rtw88_8822cu` 和 `rtw88_8821cu` 模块。Stage 70 会保留这些模块及内核
-依赖，`linux-firmware-rtw88` 的版本则由 `config/sources.lock` 固定。
+RTL8822CU 使用 `linux-rpi` 6.12 自带的 `rtw88_8822cu`。RTL8811CU 在
+Stage 60 从锁定的 `RTL8811CU_Driver` submodule 编译 `8821cu.ko`；
+`linux-rpi-dev` 与 `linux-rpi` 使用完全相同的锁定版本，编译依赖会在安装
+模块并运行 `depmod` 后删除。Stage 70 保留两个模块及其依赖。可通过
+`RTL8811CU_BUILD_JOBS` 调整厂商驱动的并行编译数，默认值为 2。
 
 生成的 Boot、活动 rootfs 和备用 rootfs 分区均按可写方式挂载。`/etc`
 继续使用 data 分区上的持久化 overlay；这不会把 rootfs 设为只读，并可让配置在
@@ -89,6 +91,7 @@ GitHub Actions 可使用 `HP1020_FIRMWARE_B64` secret。其内容是 `sihp1020.d
 
 - `config/sources.lock`
 - `packages/foo2zjs/APKBUILD` 的 `_commit` 与 sha512
+- `RTL8811CU_Driver` submodule commit 与内核 6.12 编译兼容性
 - 固件来源变化时的三层校验值
 - README 或兼容性说明
 

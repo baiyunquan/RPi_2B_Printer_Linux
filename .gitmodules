@@ -6,3 +6,6 @@
 	path = vendor/foo2zjs
 	url = https://github.com/OpenPrinting/foo2zjs.git
 	branch = main-fixes
+[submodule "RTL8811CU_Driver"]
+	path = RTL8811CU_Driver
+	url = https://github.com/baiyunquan/RTL8811CU_for_Raspbian.git
