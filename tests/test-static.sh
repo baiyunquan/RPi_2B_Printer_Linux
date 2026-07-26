@@ -77,7 +77,10 @@ grep -q '^iface wlan0 inet dhcp$' image/input/stages/60/50-configure-network.sh
 grep -q 'rc-service wpa_supplicant start' \
 	image/rootfs/usr/libexec/wifi-hotplug-worker
 grep -Fq "ifup \"\$iface\"" image/rootfs/usr/libexec/wifi-hotplug-worker
+grep -q '^Listen /run/cups/cups.sock$' image/rootfs/etc/cups/cupsd.conf
 grep -q 'Port 631' image/rootfs/etc/cups/cupsd.conf
+grep -q '^CUPS_SERVER=/run/cups/cups.sock$' \
+	packages/foo2zjs/files/hp1020-firmware-loader
 test "$(grep -c 'Allow @LOCAL' image/rootfs/etc/cups/cupsd.conf)" -eq 3
 grep -q 'chroot_exec addgroup root lpadmin' \
 	image/input/stages/60/30-configure-cups.sh

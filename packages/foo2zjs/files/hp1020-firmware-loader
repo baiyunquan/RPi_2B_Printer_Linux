@@ -4,6 +4,8 @@ set -eu
 FIRMWARE=/usr/share/foo2zjs/firmware/sihp1020.dl
 LOCK=/run/lock/hp1020-firmware
 QUEUE=hp1020
+CUPS_SERVER=/run/cups/cups.sock
+export CUPS_SERVER
 
 log() {
 	logger -t hp1020 "$*"

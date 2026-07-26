@@ -73,6 +73,7 @@ require_file "$root/usr/libexec/wifi-hotplug-worker"
 require_file "$root/etc/fstab"
 grep -q 'RUN+="/usr/libexec/wifi-hotplug %k"' \
 	"$root/etc/udev/rules.d/80-wifi-hotplug.rules"
+grep -q '^Listen /run/cups/cups.sock$' "$root/etc/cups/cupsd.conf"
 grep -q '^iface wlan0 inet dhcp$' "$root/etc/network/interfaces"
 grep -q usblp "$root/etc/modules-load.d/hp1020.conf"
 grep -q '^8821cu$' "$root/etc/modules-load.d/rtl8811cu.conf"

@@ -9,11 +9,14 @@
 打印机必须在线，首次启动服务才能获得 USB URI。运行：
 
 ```sh
+/usr/lib/cups/backend/usb
+ls -l /run/cups/cups.sock
 /usr/libexec/hp1020-firmware-loader
 lpstat -t
 ```
 
-查看 `dmesg` 中以 `hp1020:` 开头的消息。
+USB 后端应列出 LaserJet 1020，本地 CUPS socket 必须存在。查看 `dmesg`
+中以 `hp1020:` 开头的消息。
 
 ## 固件未加载
 
