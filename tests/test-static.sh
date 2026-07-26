@@ -47,7 +47,7 @@ grep -q \
 grep -q '^RTL8811CU_BUILD_JOBS=2$' config/build.env
 grep -q '^LINUX_FIRMWARE_RTW88_VERSION=20251125-r1$' config/sources.lock
 grep -q '^RTL8811CU_SUBMODULE=RTL8811CU_Driver$' config/sources.lock
-grep -q '^RTL8811CU_COMMIT=d28dd4b5949c4be59a8bacb67c68dd1dbd511bb5$' \
+grep -q '^RTL8811CU_COMMIT=acac2a8ad6c6f6695e95266a7260f54e7dca0210$' \
 	config/sources.lock
 grep -q "linux-firmware-rtw88=\$LINUX_FIRMWARE_RTW88_VERSION" \
 	image/input/stages/00/50-arch-specific-rpi.sh
